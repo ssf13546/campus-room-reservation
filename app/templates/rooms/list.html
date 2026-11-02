@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}房间列表{% endblock %}
+{% block content %}
+<h3 class="mb-4">房间列表</h3>
+<div class="row">
+  {% for room in rooms %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ room.name }}</h5>
+        <p class="card-text text-muted">{{ room.location or '未填写位置' }}</p>
+        <ul class="list-unstyled small">
+          <li>容量：{{ room.capacity }} 人</li>
+          <li>设备：{{ room.equipment or '无' }}</li>
+          <li>
+            状态：
+            {% if room.status == 'available' %}
+              <span class="badge bg-success">可用</span>
+            {% else %}
+              <span class="badge bg-secondary">维护中</span>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer bg-transparent">
+        <a href="{{ url_for('rooms.detail', room_id=room.id) }}" class="btn btn-sm btn-outline-primary">查看详情</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="text-muted">暂无房间</p>
+  {% endfor %}
+</div>
+{% endblock %}

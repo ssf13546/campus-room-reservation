@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ room.name }}{% endblock %}
+{% block content %}
+<h3>{{ room.name }}</h3>
+<p class="text-muted">
+  位置：{{ room.location or '未填写' }} ｜ 容量：{{ room.capacity }} 人 ｜ 设备：{{ room.equipment or '无' }}
+</p>
+<p>
+  状态：
+  {% if room.status == 'available' %}
+    <span class="badge bg-success">可用</span>
+  {% else %}
+    <span class="badge bg-secondary">维护中</span>
+  {% endif %}
+</p>
+{% if room.description %}<p>{{ room.description }}</p>{% endif %}
+
+<form method="get" class="row g-2 mb-4">
+  <div class="col-auto">
+    <input type="date" name="date" class="form-control" value="{{ date.isoformat() }}">
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-outline-primary">查询可用时段</button>
+  </div>
+</form>
+
+<h5>{{ date.isoformat() }} 时段情况（营业时间 08:00–22:00）</h5>
+<div class="d-flex flex-wrap gap-2 mb-4">
+  {% for s in slots %}
+    <div class="border rounded p-2 text-center {{ 'bg-light' if s.free else 'bg-danger text-white' }}" style="min-width: 90px;">
+      <div>{{ s.start }}</div>
+      <small>{{ '空闲' if s.free else '已预约' }}</small>
+    </div>
+  {% endfor %}
+</div>
+
+{% if room.status == 'available' %}
+<a href="{{ url_for('reservations.new', room_id=room.id, date=date.isoformat()) }}" class="btn btn-primary">预约该房间</a>
+{% else %}
+<button class="btn btn-secondary" disabled>该房间维护中，暂不可预约</button>
+{% endif %}
+{% endblock %}

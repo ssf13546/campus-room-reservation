@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}我的预约{% endblock %}
+{% block content %}
+<h3 class="mb-4">我的预约</h3>
+<table class="table table-striped align-middle">
+  <thead>
+    <tr><th>房间</th><th>日期</th><th>时间</th><th>用途</th><th>人数</th><th>状态</th><th>操作</th></tr>
+  </thead>
+  <tbody>
+  {% for r in reservations %}
+    <tr>
+      <td>{{ r.room.name }}</td>
+      <td>{{ r.date }}</td>
+      <td>{{ r.start_time.strftime('%H:%M') }} - {{ r.end_time.strftime('%H:%M') }}</td>
+      <td>{{ r.purpose or '-' }}</td>
+      <td>{{ r.attendees or '-' }}</td>
+      <td>
+        {% if r.status == 'booked' %}<span class="badge bg-success">已预约</span>
+        {% elif r.status == 'cancelled' %}<span class="badge bg-secondary">已取消</span>
+        {% else %}<span class="badge bg-info">已完成</span>{% endif %}
+      </td>
+      <td>
+        {% if r.status == 'booked' %}
+        <form method="post" action="{{ url_for('reservations.cancel', reservation_id=r.id) }}"
+              onsubmit="return confirm('确定取消该预约？')">
+          <button class="btn btn-sm btn-outline-danger">取消</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="text-muted text-center">暂无预约</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

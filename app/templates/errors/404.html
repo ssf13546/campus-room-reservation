@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}页面不存在{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-4">404</h1>
+  <p class="text-muted">页面不存在或预约不存在。</p>
+  <a href="{{ url_for('rooms.index') }}" class="btn btn-primary">返回首页</a>
+</div>
+{% endblock %}

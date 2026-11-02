@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}房间管理{% endblock %}
+{% block content %}
+<h3 class="mb-4">房间管理</h3>
+
+<div class="card mb-4">
+  <div class="card-header">新增房间</div>
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-3">
+        <input type="text" name="name" class="form-control" placeholder="房间名称" required>
+      </div>
+      <div class="col-md-2">
+        <input type="text" name="location" class="form-control" placeholder="位置">
+      </div>
+      <div class="col-md-1">
+        <input type="number" name="capacity" class="form-control" placeholder="容量" min="1" required>
+      </div>
+      <div class="col-md-2">
+        <input type="text" name="equipment" class="form-control" placeholder="设备">
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select">
+          <option value="available">可用</option>
+          <option value="maintenance">维护中</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100">添加</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<table class="table table-striped align-middle">
+  <thead>
+    <tr><th>ID</th><th>名称</th><th>位置</th><th>容量</th><th>设备</th><th>状态</th><th>操作</th></tr>
+  </thead>
+  <tbody>
+  {% for room in rooms %}
+    <tr>
+      <td>{{ room.id }}</td>
+      <td>{{ room.name }}</td>
+      <td>{{ room.location or '-' }}</td>
+      <td>{{ room.capacity }}</td>
+      <td>{{ room.equipment or '-' }}</td>
+      <td>
+        {% if room.status == 'available' %}<span class="badge bg-success">可用</span>
+        {% else %}<span class="badge bg-secondary">维护中</span>{% endif %}
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal"
+          data-id="{{ room.id }}" data-name="{{ room.name }}" data-location="{{ room.location or '' }}"
+          data-capacity="{{ room.capacity }}" data-equipment="{{ room.equipment or '' }}"
+          data-status="{{ room.status }}" data-description="{{ room.description or '' }}">编辑</button>
+        <form method="post" action="{{ url_for('admin.delete_room', room_id=room.id) }}" class="d-inline"
+              onsubmit="return confirm('确定删除房间 {{ room.name }}？')">
+          <button class="btn btn-sm btn-outline-danger">删除</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="text-muted text-center">暂无房间</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="post" id="editForm" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">编辑房间</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">名称</label><input type="text" name="name" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">位置</label><input type="text" name="location" class="form-control"></div>
+        <div class="mb-3"><label class="form-label">容量</label><input type="number" name="capacity" class="form-control" min="1" required></div>
+        <div class="mb-3"><label class="form-label">设备</label><input type="text" name="equipment" class="form-control"></div>
+        <div class="mb-3">
+          <label class="form-label">状态</label>
+          <select name="status" class="form-select">
+            <option value="available">可用</option>
+            <option value="maintenance">维护中</option>
+          </select>
+        </div>
+        <div class="mb-3"><label class="form-label">描述</label><textarea name="description" class="form-control"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const editModal = document.getElementById('editModal');
+  editModal.addEventListener('show.bs.modal', function (event) {
+    const btn = event.relatedTarget;
+    const form = document.getElementById('editForm');
+    form.action = '/admin/rooms/' + btn.dataset.id + '/edit';
+    form.querySelector('[name=name]').value = btn.dataset.name;
+    form.querySelector('[name=location]').value = btn.dataset.location;
+    form.querySelector('[name=capacity]').value = btn.dataset.capacity;
+    form.querySelector('[name=equipment]').value = btn.dataset.equipment;
+    form.querySelector('[name=status]').value = btn.dataset.status;
+    form.querySelector('[name=description]').value = btn.dataset.description;
+  });
+</script>
+{% endblock %}

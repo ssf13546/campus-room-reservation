@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}创建预约{% endblock %}
+{% block content %}
+<h3 class="mb-4">创建预约</h3>
+<form method="post" class="card card-body">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">房间</label>
+      {% if room %}
+        <input type="hidden" name="room_id" value="{{ room.id }}">
+        <input type="text" class="form-control" value="{{ room.name }}（{{ room.location or '未填写' }}）" disabled>
+      {% else %}
+        <select name="room_id" class="form-select" required>
+          <option value="">请选择房间</option>
+          {% for r in rooms %}
+            <option value="{{ r.id }}">{{ r.name }}（{{ r.location or '未填写' }}）</option>
+          {% endfor %}
+        </select>
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">日期</label>
+      <input type="date" name="date" class="form-control" value="{{ date }}" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">开始时间</label>
+      <input type="time" name="start_time" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">结束时间</label>
+      <input type="time" name="end_time" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">人数</label>
+      <input type="number" name="attendees" class="form-control" min="1">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">用途</label>
+      <input type="text" name="purpose" class="form-control" placeholder="如：小组讨论">
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary">提交预约</button>
+      <a href="{{ url_for('rooms.index') }}" class="btn btn-outline-secondary">返回</a>
+    </div>
+  </div>
+</form>
+{% endblock %}
